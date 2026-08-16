@@ -1,0 +1,11 @@
+fastapi
+uvicorn
+numpy
+pandas
+scikit-learn
+pillow
+python-multipart
+gdown
+tensorflow==2.15.0
+python-dotenv
+httpx
