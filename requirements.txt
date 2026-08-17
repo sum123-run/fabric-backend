@@ -6,6 +6,6 @@ scikit-learn
 pillow
 python-multipart
 gdown
-tflite-runtime
+ai-edge-litert
 python-dotenv
 httpx

@@ -6,7 +6,7 @@ load_dotenv()
 import gdown
 import numpy as np
 from PIL import Image
-from tflite_runtime.interpreter import Interpreter
+from ai_edge_litert.interpreter import Interpreter
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
@@ -18,7 +18,7 @@ MODEL_PATH = "final_fabric_model_v2.tflite"
 
 if not os.path.exists(MODEL_PATH):
     print("Downloading model from Google Drive...")
-    url = "https://drive.google.com/file/d/1n80l9g4d1-t0ANC-EqE04vIffJ6V4jro/view?usp=drive_link"
+    url = "https://drive.google.com/uc?id=1n80l9g4d1-t0ANC-EqE04vIffJ6V4jro"
     gdown.download(url, MODEL_PATH, quiet=False)
 
 # =========================
