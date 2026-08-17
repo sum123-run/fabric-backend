@@ -5,29 +5,33 @@ from dotenv import load_dotenv
 load_dotenv()
 import gdown
 import numpy as np
-import tensorflow as tf
 from PIL import Image
+from tflite_runtime.interpreter import Interpreter
 
 from fastapi import FastAPI, UploadFile, File
 from fastapi.middleware.cors import CORSMiddleware
-from tensorflow.keras.applications.mobilenet_v2 import preprocess_input
 
 # =========================
 # STEP 1: DOWNLOAD MODEL IF MISSING
 # =========================
-MODEL_PATH = "final_fabric_model_v2.keras"
+MODEL_PATH = "final_fabric_model_v2.tflite"
 
 if not os.path.exists(MODEL_PATH):
     print("Downloading model from Google Drive...")
-    url = "https://drive.google.com/uc?id=1PgHQOnqVtESMeiqo5VR7N0Foe7eDJWc0"
+    url = "https://drive.google.com/file/d/1n80l9g4d1-t0ANC-EqE04vIffJ6V4jro/view?usp=drive_link"
     gdown.download(url, MODEL_PATH, quiet=False)
 
 # =========================
-# STEP 2: LOAD MODEL
+# STEP 2: LOAD MODEL (TFLITE)
 # =========================
-model = tf.keras.models.load_model(MODEL_PATH)
+interpreter = Interpreter(model_path=MODEL_PATH)
+interpreter.allocate_tensors()
+
+input_details = interpreter.get_input_details()
+output_details = interpreter.get_output_details()
+
 print("Model loaded successfully")
-print("MODEL OUTPUT SHAPE:", model.output_shape)
+print("MODEL OUTPUT SHAPE:", output_details[0]['shape'])
 
 # Image size (MATCH TRAINING)
 IMG_SIZE = (224, 224)
@@ -54,6 +58,17 @@ app.add_middleware(
 )
 
 
+def preprocess_input(x: np.ndarray) -> np.ndarray:
+    """
+    Manual replacement for tf.keras.applications.mobilenet_v2.preprocess_input
+    MobileNetV2 preprocessing scales pixels from [0, 255] to [-1, 1]
+    """
+    x = x.astype(np.float32)
+    x = x / 127.5
+    x = x - 1.0
+    return x
+
+
 @app.get("/")
 def home():
     return {"message": "API is running"}
@@ -76,10 +91,12 @@ async def predict(file: UploadFile = File(...)):
         img_array = preprocess_input(img_array)
 
         # Add batch dimension
-        img_array = np.expand_dims(img_array, axis=0)
+        img_array = np.expand_dims(img_array, axis=0).astype(np.float32)
 
-        # Prediction
-        prediction = model.predict(img_array)
+        # Prediction (TFLITE)
+        interpreter.set_tensor(input_details[0]['index'], img_array)
+        interpreter.invoke()
+        prediction = interpreter.get_tensor(output_details[0]['index'])
 
         predicted_class = int(np.argmax(prediction))
         confidence = float(np.max(prediction))

@@ -6,6 +6,6 @@ scikit-learn
 pillow
 python-multipart
 gdown
-tensorflow==2.15.0
+tflite-runtime
 python-dotenv
 httpx
