@@ -1,4 +1,4 @@
-# Fabric App — Frontend
+# Fabric App — Backend
 
 A React Native (Expo) app for fabric detection, virtual try-on, and outfit styling. Users can browse garment categories (Frocks, Saree, Kurta, and more), preview fabrics and styles, and see AI-generated try-on results.
 
