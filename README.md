@@ -1,51 +1,116 @@
 # Fabric App — Backend
 
-A React Native (Expo) app for fabric detection, virtual try-on, and outfit styling. Users can browse garment categories (Frocks, Saree, Kurta, and more), preview fabrics and styles, and see AI-generated try-on results.
+FastAPI-based backend for the Fabric App. It provides APIs for fabric classification, image processing, and AI-powered features, connecting the React Native (Expo) frontend with the trained machine learning model.
 
-## Demo
-
-![App Demo](https://github.com/user-attachments/assets/64f748b0-75ba-4668-a642-26dce1ac00f6)
 ## Features
 
-- 🧵 **Fabric Detection** — identifies fabric type from an image with a confidence score
-- 📂 **Category Browsing** — Frocks, Saree, Kurta, and more, with style previews
-- 🔐 **Authentication** — user login/signup (Firebase Auth)
-- ⭐ **Feedback** — users can rate and submit feedback on outfit combinations
+* 🔌 **REST API** — connects the React Native frontend to backend services
+* 🧵 **Fabric Prediction** — identifies the fabric type from an uploaded image and returns a confidence score
+* 🖼️ **Image Processing** — receives and processes uploaded images before prediction
+* 🤖 **AI Chatbot** — provides AI-powered assistance using the Groq API
+* ⚡ **FastAPI Backend** — lightweight Python API for handling frontend requests and ML inference Show Image
+ 
+
+## Demo 
+(https://github.com/user-attachments/assets/31d20799-9a76-40d9-adda-9d50140cb805)
 
 ## Tech Stack
 
-- **Framework:** React Native (Expo)
-- **Auth & Backend services:** Firebase
-- **Navigation:** Expo Router
+* **Language:** Python
+* **Framework:** FastAPI
+* **Server:** Uvicorn
+* **Machine Learning:** TensorFlow / Keras
+* **Model:** MobileNetV2 (Transfer Learning)
+* **Image Processing:** PIL, NumPy
+* **AI API:** Groq API
+* **Model Storage:** Google Drive
 
-## Screens
+## API Endpoints
 
-| Screen | Description |
-|---|---|
-| `SplashScreen` | App launch screen |
-| `LoginScreen` / `SignupScreen` | User authentication |
-| `LoadingScreen` | Loading state while processing |
-| `PredictionScreen` | Fabric detection & try-on results |
-| `AppScreenPreview` | Preview of generated outfit/fabric |
+| Method | Endpoint   | Description                                                                 |
+| ------ | ---------- | --------------------------------------------------------------------------- |
+| `GET`  | `/`        | Checks whether the backend is running                                       |
+| `POST` | `/upload`  | Receives and saves an uploaded image                                        |
+| `POST` | `/predict` | Accepts an image and returns the predicted fabric type and confidence score |
 
 ## Getting Started
 
 ```bash
 # Clone the repo
-git clone https://github.com/sum123-run/fabric-frontend.git
-cd fabric-frontend
+git clone https://github.com/sum123-run/[your-backend-repo-name].git
+cd [your-backend-repo-name]
 
 # Install dependencies
-npm install
+pip install -r requirements.txt
 
-# Start the app
-npx expo start
+# Add environment variables
+# Create a .env file with the required API keys
+
+# Start the FastAPI server
+uvicorn main:app --host 0.0.0.0 --port 8000
 ```
+
+The backend will be available locally at:
+
+```text
+http://localhost:8000
+```
+
+FastAPI documentation is available at:
+
+```text
+http://localhost:8000/docs
+```
+
+## Environment Variables
+```env
+GROQ_API_KEY
+```
+## Model
+
+The Fabric App uses a **MobileNetV2 transfer learning model** for fabric classification.
+
+### Model Details
+
+* **Architecture:** MobileNetV2
+* **Approach:** Transfer Learning
+* **Input Size:** 224 × 224 pixels
+* **Framework:** TensorFlow / Keras
+* **Dataset:** The Fabrics Dataset by iBUG
+* **Classes:** 23 fabric classes
+* **Preprocessing:** MobileNetV2 `preprocess_input`
+* **Image Processing:** PIL and NumPy
+* **Inference:** The trained model is loaded by the FastAPI backend and used to classify uploaded fabric images.
+
+The model returns:
+
+```json
+{
+  "success": true,
+  "prediction": "fabric_type",
+  "confidence": 0.85
+}
+```
+
+## Backend Structure
+
+```text
+fabric-backend/
+│
+├── main.py
+├── requirements.txt
+├── class_names.json
+├── .env
+├── .gitignore
+└── README.md
+```
+
+>
 
 ## Related Repos
 
-- Frontend: [https://github.com/sum123-run/fabric-frontend/tree/main]
+* Frontend: https://github.com/sum123-run/fabric-frontend
 
 ## License
 
-[MIT]
+MIT
